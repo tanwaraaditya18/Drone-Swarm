@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DroneSwarm - Control Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <i class="fa-solid fa-drone"></i>
+            <span>Drone<span class="logo-highlight">Swarm</span></span>
+        </div>
+
+        <nav>
+
+            <button class="nav-item active" data-page="dashboard">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+
+            <button class="nav-item" data-page="drones">
+                <i class="fa-solid fa-helicopter"></i>
+                <span>Drones</span>
+            </button>
+
+            <button class="nav-item" data-page="missions">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Missions</span>
+            </button>
+
+            <button class="nav-item" data-page="victims">
+                <i class="fa-solid fa-person"></i>
+                <span>Victims</span>
+            </button>
+
+            <button class="nav-item" data-page="map">
+                <i class="fa-solid fa-map"></i>
+                <span>Live Map</span>
+            </button>
+
+            <button class="nav-item" data-page="alerts">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Alerts</span>
+                <span class="alert-count">3</span>
+            </button>
+
+            <button class="nav-item" data-page="settings">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-dot"></span>
+
+                <div>
+                    <small>System Status</small>
+                    <strong>Operational</strong>
+                </div>
+            </div>
+
+            <div class="version">
+                DroneSwarm v1.0 Prototype
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1 id="page-title">Dashboard</h1>
+                <p id="page-subtitle">
+                    Autonomous disaster response control center
+                </p>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="clock" id="clock">
+                    10:30:00
+                </div>
+
+                <button class="icon-button">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <div class="operator">
+
+                    <div class="avatar">
+                        OP
+                    </div>
+
+                    <div>
+                        <strong>Operator</strong>
+                        <small>Control Center</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================================= -->
+        <!-- DASHBOARD PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page active-page" id="dashboard">
+
+            <!-- STAT CARDS -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-drone"></i>
+                    </div>
+
+                    <div>
+                        <p>Total Drones</p>
+                        <h2>5</h2>
+                        <span class="positive">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            All registered
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+
+                    <div>
+                        <p>Active Missions</p>
+                        <h2>3</h2>
+                        <span class="positive">
+                            2 in progress
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon red">
+                        <i class="fa-solid fa-person"></i>
+                    </div>
+
+                    <div>
+                        <p>Victims Detected</p>
+                        <h2>12</h2>
+                        <span class="danger-text">
+                            4 high priority
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <div>
+                        <p>Area Coverage</p>
+                        <h2 id="coverage">68%</h2>
+                        <span class="positive">
+                            +6.4% today
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MAIN DASHBOARD GRID -->
+
+            <div class="dashboard-grid">
+
+                <!-- MAP -->
+
+                <div class="card map-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Live Map & Tracking</h3>
+                            <p>Current drone positions</p>
+                        </div>
+
+                        <button class="small-button"
+                            onclick="openPage('map')">
+                            View Full Map
+                        </button>
+
+                    </div>
+
+                    <div id="dashboard-map" class="map"></div>
+
+                </div>
+
+
+                <!-- DRONE STATUS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Drone Status</h3>
+                            <p>Live telemetry</p>
+                        </div>
+
+                        <span class="live-badge">
+                            <span></span> LIVE
+                        </span>
+
+                    </div>
+
+
+                    <div class="drone-list">
+
+                        <div class="drone-row">
+
+                            <div class="drone-icon">
+                                <i class="fa-solid fa-drone"></i>
+                            </div>
+
+                            <div class="drone-info">
+                                <strong>DRONE_01</strong>
+                                <small>Searching Sector A</small>
+                            </div>
+
+                            <div class="battery">
+                                <span>82%</span>
+                                <div class="battery-bar">
+                                    <div style="width:82%"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="drone-row">
+
+                            <div class="drone-icon">
+                                <i class="fa-solid fa-drone"></i>
+                            </div>
+
+                            <div class="drone-info">
+                                <strong>DRONE_02</strong>
+                                <small>En Route to V-007</small>
+                            </div>
+
+                            <div class="battery">
+                                <span>67%</span>
+                                <div class="battery-bar">
+                                    <div style="width:67%"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="drone-row">
+
+                            <div class="drone-icon">
+                                <i class="fa-solid fa-drone"></i>
+                            </div>
+
+                            <div class="drone-info">
+                                <strong>DRONE_03</strong>
+                                <small>Searching Sector C</small>
+                            </div>
+
+                            <div class="battery">
+                                <span>45%</span>
+                                <div class="battery-bar">
+                                    <div style="width:45%"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="drone-row warning">
+
+                            <div class="drone-icon">
+                                <i class="fa-solid fa-drone"></i>
+                            </div>
+
+                            <div class="drone-info">
+                                <strong>DRONE_04</strong>
+                                <small>Returning to base</small>
+                            </div>
+
+                            <div class="battery">
+                                <span>23%</span>
+                                <div class="battery-bar">
+                                    <div style="width:23%"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="drone-row">
+
+                            <div class="drone-icon">
+                                <i class="fa-solid fa-drone"></i>
+                            </div>
+
+                            <div class="drone-info">
+                                <strong>DRONE_05</strong>
+                                <small>Searching Sector D</small>
+                            </div>
+
+                            <div class="battery">
+                                <span>78%</span>
+                                <div class="battery-bar">
+                                    <div style="width:78%"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOWER GRID -->
+
+            <div class="lower-grid">
+
+
+                <!-- LIVE FEED -->
+
+                <div class="card feed-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Live Feed — DRONE_02</h3>
+                            <p>Camera simulation</p>
+                        </div>
+
+                        <span class="recording">
+                            ● REC
+                        </span>
+
+                    </div>
+
+                    <div class="video-feed">
+
+                        <div class="fake-camera">
+
+                            <div class="crosshair"></div>
+
+                            <div class="person-detection">
+
+                                <div class="detection-box">
+
+                                    <span>PERSON</span>
+
+                                    <strong>94.7%</strong>
+
+                                </div>
+
+                            </div>
+
+                            <div class="camera-data">
+                                ALT: 42m<br>
+                                SPD: 8.2m/s<br>
+                                GPS: 28.61, 77.20
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ALERTS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Recent Alerts</h3>
+                            <p>Latest system events</p>
+                        </div>
+
+                        <button class="text-button"
+                            onclick="openPage('alerts')">
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <div class="alerts-list">
+
+                        <div class="alert-item high">
+
+                            <div class="alert-icon">
+                                <i class="fa-solid fa-person"></i>
+                            </div>
+
+                            <div>
+                                <strong>Victim Detected</strong>
+                                <small>DRONE_02 • 2 min ago</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="alert-item warning">
+
+                            <div class="alert-icon">
+                                <i class="fa-solid fa-battery-quarter"></i>
+                            </div>
+
+                            <div>
+                                <strong>Low Battery</strong>
+                                <small>DRONE_04 • 7 min ago</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="alert-item warning">
+
+                            <div class="alert-icon">
+                                <i class="fa-solid fa-wifi"></i>
+                            </div>
+
+                            <div>
+                                <strong>Weak Signal</strong>
+                                <small>DRONE_03 • 11 min ago</small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MISSIONS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Mission Progress</h3>
+                            <p>Current missions</p>
+                        </div>
+
+                        <button class="text-button"
+                            onclick="openPage('missions')">
+                            View All
+                        </button>
+
+                    </div>
+
+
+                    <div class="mission-progress">
+
+                        <div class="mission">
+
+                            <div class="mission-title">
+                                <span class="mission-number green-bg">
+                                    01
+                                </span>
+
+                                <div>
+                                    <strong>Search Sector A</strong>
+                                    <small>DRONE_01</small>
+                                </div>
+
+                                <span class="completed">
+                                    100%
+                                </span>
+                            </div>
+
+                            <div class="progress">
+                                <div style="width:100%"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="mission">
+
+                            <div class="mission-title">
+
+                                <span class="mission-number yellow-bg">
+                                    02
+                                </span>
+
+                                <div>
+                                    <strong>Rescue V-007</strong>
+                                    <small>DRONE_02</small>
+                                </div>
+
+                                <span class="in-progress">
+                                    64%
+                                </span>
+
+                            </div>
+
+                            <div class="progress">
+                                <div style="width:64%"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="mission">
+
+                            <div class="mission-title">
+
+                                <span class="mission-number blue-bg">
+                                    03
+                                </span>
+
+                                <div>
+                                    <strong>Search Sector C</strong>
+                                    <small>DRONE_03</small>
+                                </div>
+
+                                <span class="pending">
+                                    32%
+                                </span>
+
+                            </div>
+
+                            <div class="progress">
+                                <div style="width:32%"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- DRONES PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="drones">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Drone Fleet</h2>
+                    <p>Monitor all active drones and telemetry.</p>
+                </div>
+
+                <button class="primary-button">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Drone
+                </button>
+
+            </div>
+
+
+            <div class="drone-cards">
+
+                <div class="large-drone-card">
+
+                    <div class="large-drone-header">
+
+                        <div class="big-drone-icon">
+                            <i class="fa-solid fa-drone"></i>
+                        </div>
+
+                        <div>
+                            <h3>DRONE_01</h3>
+                            <span class="online">
+                                ● Online
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="telemetry-grid">
+
+                        <div>
+                            <small>Battery</small>
+                            <strong>82%</strong>
+                        </div>
+
+                        <div>
+                            <small>Altitude</small>
+                            <strong>45 m</strong>
+                        </div>
+
+                        <div>
+                            <small>Speed</small>
+                            <strong>7.8 m/s</strong>
+                        </div>
+
+                        <div>
+                            <small>Signal</small>
+                            <strong>Strong</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="drone-task">
+                        <small>Current Mission</small>
+                        <strong>Search Sector A</strong>
+                    </div>
+
+                    <button class="outline-button">
+                        View Details
+                    </button>
+
+                </div>
+
+
+                <div class="large-drone-card">
+
+                    <div class="large-drone-header">
+
+                        <div class="big-drone-icon">
+                            <i class="fa-solid fa-drone"></i>
+                        </div>
+
+                        <div>
+                            <h3>DRONE_02</h3>
+                            <span class="online">
+                                ● Online
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="telemetry-grid">
+
+                        <div>
+                            <small>Battery</small>
+                            <strong>67%</strong>
+                        </div>
+
+                        <div>
+                            <small>Altitude</small>
+                            <strong>42 m</strong>
+                        </div>
+
+                        <div>
+                            <small>Speed</small>
+                            <strong>8.2 m/s</strong>
+                        </div>
+
+                        <div>
+                            <small>Signal</small>
+                            <strong>Strong</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="drone-task">
+                        <small>Current Mission</small>
+                        <strong>Rescue V-007</strong>
+                    </div>
+
+                    <button class="outline-button">
+                        View Details
+                    </button>
+
+                </div>
+
+
+                <div class="large-drone-card warning-card">
+
+                    <div class="large-drone-header">
+
+                        <div class="big-drone-icon warning-icon">
+                            <i class="fa-solid fa-drone"></i>
+                        </div>
+
+                        <div>
+                            <h3>DRONE_04</h3>
+                            <span class="warning-status">
+                                ● Low Battery
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="telemetry-grid">
+
+                        <div>
+                            <small>Battery</small>
+                            <strong>23%</strong>
+                        </div>
+
+                        <div>
+                            <small>Altitude</small>
+                            <strong>28 m</strong>
+                        </div>
+
+                        <div>
+                            <small>Speed</small>
+                            <strong>5.1 m/s</strong>
+                        </div>
+
+                        <div>
+                            <small>Signal</small>
+                            <strong>Good</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="drone-task">
+                        <small>Current Mission</small>
+                        <strong>Returning to Base</strong>
+                    </div>
+
+                    <button class="outline-button">
+                        View Details
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- MISSIONS PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="missions">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Mission Management</h2>
+                    <p>Create, monitor and manage rescue missions.</p>
+                </div>
+
+                <button class="primary-button">
+                    <i class="fa-solid fa-plus"></i>
+                    New Mission
+                </button>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <div class="table-header">
+
+                    <h3>Active Missions</h3>
+
+                    <input type="text"
+                        placeholder="Search missions..."
+                        class="search-input">
+
+                </div>
+
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Mission ID</th>
+                            <th>Drone</th>
+                            <th>Type</th>
+                            <th>Target</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>#MS-001</td>
+                            <td>DRONE_01</td>
+                            <td>Search</td>
+                            <td>Sector A</td>
+                            <td>100%</td>
+                            <td>
+                                <span class="badge completed-badge">
+                                    Completed
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#MS-002</td>
+                            <td>DRONE_02</td>
+                            <td>Rescue</td>
+                            <td>Victim V-007</td>
+                            <td>64%</td>
+                            <td>
+                                <span class="badge progress-badge">
+                                    In Progress
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#MS-003</td>
+                            <td>DRONE_03</td>
+                            <td>Search</td>
+                            <td>Sector C</td>
+                            <td>32%</td>
+                            <td>
+                                <span class="badge progress-badge">
+                                    In Progress
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>#MS-004</td>
+                            <td>DRONE_05</td>
+                            <td>Search</td>
+                            <td>Sector D</td>
+                            <td>18%</td>
+                            <td>
+                                <span class="badge pending-badge">
+                                    Pending
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- VICTIMS PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="victims">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Victim Detection</h2>
+                    <p>Detected victims and rescue priorities.</p>
+                </div>
+
+            </div>
+
+
+            <div class="victim-summary">
+
+                <div class="priority-card high-priority">
+                    <small>High Priority</small>
+                    <strong>4</strong>
+                    <span>Immediate attention</span>
+                </div>
+
+                <div class="priority-card medium-priority">
+                    <small>Medium Priority</small>
+                    <strong>5</strong>
+                    <span>Monitor / respond</span>
+                </div>
+
+                <div class="priority-card low-priority">
+                    <small>Low Priority</small>
+                    <strong>3</strong>
+                    <span>Non-critical</span>
+                </div>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <div class="table-header">
+                    <h3>Detected Victims</h3>
+
+                    <input type="text"
+                        placeholder="Search victims..."
+                        class="search-input">
+                </div>
+
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Victim ID</th>
+                            <th>Location</th>
+                            <th>Detected By</th>
+                            <th>Confidence</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>V-007</td>
+                            <td>28.6150, 77.2100</td>
+                            <td>DRONE_02</td>
+                            <td>94.7%</td>
+                            <td>
+                                <span class="priority high">
+                                    HIGH
+                                </span>
+                            </td>
+                            <td>Assigned</td>
+                        </tr>
+
+                        <tr>
+                            <td>V-008</td>
+                            <td>28.6125, 77.2060</td>
+                            <td>DRONE_03</td>
+                            <td>91.2%</td>
+                            <td>
+                                <span class="priority medium">
+                                    MEDIUM
+                                </span>
+                            </td>
+                            <td>Detected</td>
+                        </tr>
+
+                        <tr>
+                            <td>V-009</td>
+                            <td>28.6095, 77.2085</td>
+                            <td>DRONE_01</td>
+                            <td>88.5%</td>
+                            <td>
+                                <span class="priority high">
+                                    HIGH
+                                </span>
+                            </td>
+                            <td>Detected</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- MAP PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="map">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Live Map</h2>
+                    <p>Real-time drone and victim tracking.</p>
+                </div>
+
+                <div>
+                    <button class="map-control active">
+                        Drones
+                    </button>
+
+                    <button class="map-control">
+                        Victims
+                    </button>
+
+                    <button class="map-control">
+                        Routes
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div id="full-map" class="full-map"></div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- ALERTS PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="alerts">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>System Alerts</h2>
+                    <p>Warnings and important events.</p>
+                </div>
+
+                <button class="outline-button">
+                    Mark All Read
+                </button>
+
+            </div>
+
+
+            <div class="alert-page-list">
+
+                <div class="big-alert high-alert">
+
+                    <div class="big-alert-icon">
+                        <i class="fa-solid fa-person"></i>
+                    </div>
+
+                    <div>
+                        <strong>High Priority Victim Detected</strong>
+                        <p>
+                            DRONE_02 detected a potential victim
+                            at coordinates 28.6150, 77.2100.
+                        </p>
+                        <small>2 minutes ago</small>
+                    </div>
+
+                    <span class="alert-level high">
+                        HIGH
+                    </span>
+
+                </div>
+
+
+                <div class="big-alert warning-alert">
+
+                    <div class="big-alert-icon">
+                        <i class="fa-solid fa-battery-quarter"></i>
+                    </div>
+
+                    <div>
+                        <strong>Low Battery Warning</strong>
+                        <p>
+                            DRONE_04 battery level has dropped
+                            below the mission safety threshold.
+                        </p>
+                        <small>7 minutes ago</small>
+                    </div>
+
+                    <span class="alert-level medium">
+                        WARNING
+                    </span>
+
+                </div>
+
+
+                <div class="big-alert warning-alert">
+
+                    <div class="big-alert-icon">
+                        <i class="fa-solid fa-wifi"></i>
+                    </div>
+
+                    <div>
+                        <strong>Communication Weak</strong>
+                        <p>
+                            DRONE_03 signal strength is decreasing.
+                        </p>
+                        <small>11 minutes ago</small>
+                    </div>
+
+                    <span class="alert-level medium">
+                        WARNING
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SETTINGS PAGE -->
+        <!-- ================================================= -->
+
+        <section class="page" id="settings">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Settings</h2>
+                    <p>Configure DroneSwarm system preferences.</p>
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Automatic Mission Assignment</strong>
+                        <p>
+                            Allow the system to automatically assign
+                            drones to new missions.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Low Battery Alerts</strong>
+                        <p>
+                            Notify operator when drone battery
+                            reaches safety threshold.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Communication Monitoring</strong>
+                        <p>
+                            Monitor drone-to-control-center signal.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Dark Mode</strong>
+                        <p>
+                            Use the dark control-center interface.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+
+</body>
+
+</html>
